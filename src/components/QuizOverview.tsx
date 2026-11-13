@@ -1,3 +1,4 @@
+import { Button, Icon } from '@kyralabs/m3exp-web/react';
 import { Quiz } from '../types/quiz';
 
 interface QuizOverviewProps {
@@ -17,14 +18,12 @@ export default function QuizOverview({ quiz, onStart, onBack }: QuizOverviewProp
       </p>
 
       <div className="actions">
-        <button type="button" className="button button-text" onClick={onBack}>
-          <span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+        <Button variant="text" size="m" icon={<Icon name="arrow_back" />} onPress={onBack}>
           Chọn tệp khác
-        </button>
-        <button type="button" className="button button-filled" onClick={onStart}>
-          <span className="material-symbols-rounded" aria-hidden="true">play_arrow</span>
+        </Button>
+        <Button variant="filled" size="m" icon={<Icon name="play_arrow" />} onPress={onStart}>
           Bắt đầu
-        </button>
+        </Button>
       </div>
     </section>
   );

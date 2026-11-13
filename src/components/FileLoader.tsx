@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Button, Icon } from '@kyralabs/m3exp-web/react';
 
 interface FileLoaderProps {
   isLoading: boolean;
@@ -35,7 +36,7 @@ export default function FileLoader({ isLoading, error, onFile }: FileLoaderProps
           handleFiles(event.dataTransfer.files);
         }}
       >
-        <span className="material-symbols-rounded" aria-hidden="true">upload_file</span>
+        <Icon name="upload_file" />
         <p>Kéo và thả tệp <strong>.json</strong> vào đây</p>
 
         <input
@@ -47,15 +48,15 @@ export default function FileLoader({ isLoading, error, onFile }: FileLoaderProps
           aria-label="Chọn tệp bài kiểm tra JSON"
         />
 
-        <button
-          type="button"
-          className="button button-filled"
-          onClick={() => inputRef.current?.click()}
-          disabled={isLoading}
+        <Button
+          variant="filled"
+          size="m"
+          icon={<Icon name="folder_open" />}
+          onPress={() => inputRef.current?.click()}
+          isDisabled={isLoading}
         >
-          <span className="material-symbols-rounded" aria-hidden="true">folder_open</span>
           Chọn tệp bài kiểm tra
-        </button>
+        </Button>
       </div>
 
       {isLoading && (

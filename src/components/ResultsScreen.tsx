@@ -1,3 +1,4 @@
+import { Button, Icon } from '@kyralabs/m3exp-web/react';
 import { Quiz, QuizScore } from '../types/quiz';
 
 interface ResultsScreenProps {
@@ -22,23 +23,21 @@ export default function ResultsScreen({ quiz, score, onReview, onRestart, onNewQ
       </div>
 
       <ul className="result-list">
-        <li><span className="material-symbols-rounded" aria-hidden="true">check_circle</span> Đúng: {score.correct}</li>
-        <li><span className="material-symbols-rounded" aria-hidden="true">cancel</span> Sai: {score.incorrect}</li>
-        <li><span className="material-symbols-rounded" aria-hidden="true">help</span> Chưa trả lời: {score.unanswered}</li>
+        <li><Icon name="check_circle" /> Đúng: {score.correct}</li>
+        <li><Icon name="cancel" /> Sai: {score.incorrect}</li>
+        <li><Icon name="help" /> Chưa trả lời: {score.unanswered}</li>
       </ul>
 
       <div className="actions">
-        <button type="button" className="button button-tonal" onClick={onReview}>
-          <span className="material-symbols-rounded" aria-hidden="true">visibility</span>
+        <Button variant="tonal" size="m" icon={<Icon name="visibility" />} onPress={onReview}>
           Xem lại bài làm
-        </button>
-        <button type="button" className="button button-filled" onClick={onRestart}>
-          <span className="material-symbols-rounded" aria-hidden="true">refresh</span>
+        </Button>
+        <Button variant="filled" size="m" icon={<Icon name="refresh" />} onPress={onRestart}>
           Làm lại
-        </button>
-        <button type="button" className="button button-text" onClick={onNewQuiz}>
+        </Button>
+        <Button variant="text" size="m" onPress={onNewQuiz}>
           Chọn tệp khác
-        </button>
+        </Button>
       </div>
     </section>
   );

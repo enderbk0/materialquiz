@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Button, Icon } from '@kyralabs/m3exp-web/react';
 import { AnswerKey, Quiz } from '../types/quiz';
 import { useQuizSession } from '../hooks/useQuizSession';
 import AnswerOption from './AnswerOption';
@@ -40,9 +41,7 @@ export default function QuizRunner({ quiz, session, onSubmit, onExit }: QuizRunn
     <section className="surface" aria-labelledby="quiz-title">
       <div className="quiz-topline">
         <h1 id="quiz-title" className="quiz-title">{quiz.title}</h1>
-        <button type="button" className="button button-text" onClick={onExit}>
-          Thoát
-        </button>
+        <Button variant="text" size="m" onPress={onExit}>Thoát</Button>
       </div>
 
       <ProgressBar current={session.currentIndex + 1} total={quiz.questions.length} />
@@ -66,26 +65,34 @@ export default function QuizRunner({ quiz, session, onSubmit, onExit }: QuizRunn
       </div>
 
       <div className="actions">
-        <button
-          type="button"
-          className="button button-tonal"
-          onClick={session.previous}
-          disabled={session.currentIndex === 0}
+        <Button
+          variant="tonal"
+          size="m"
+          icon={<Icon name="arrow_back" />}
+          onPress={session.previous}
+          isDisabled={session.currentIndex === 0}
         >
-          <span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>
           Trước
-        </button>
+        </Button>
 
         {isLast ? (
-          <button type="button" className="button button-filled" onClick={requestSubmit}>
-            <span className="material-symbols-rounded" aria-hidden="true">check_circle</span>
+          <Button
+            variant="filled"
+            size="m"
+            icon={<Icon name="check_circle" />}
+            onPress={requestSubmit}
+          >
             Nộp bài
-          </button>
+          </Button>
         ) : (
-          <button type="button" className="button button-filled" onClick={() => session.next(quiz.questions.length)}>
+          <Button
+            variant="filled"
+            size="m"
+            icon={<Icon name="arrow_forward" />}
+            onPress={() => session.next(quiz.questions.length)}
+          >
             Sau
-            <span className="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
-          </button>
+          </Button>
         )}
       </div>
 
