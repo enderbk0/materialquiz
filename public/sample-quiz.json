@@ -1,0 +1,54 @@
+{
+  "title": "Bài kiểm tra Tin học",
+  "description": "Kiểm tra kiến thức cơ bản về máy tính và hệ điều hành.",
+  "questions": [
+    {
+      "id": "q1",
+      "question": "CPU là viết tắt của cụm từ nào?",
+      "options": {
+        "A": "Central Processing Unit",
+        "B": "Computer Personal Unit",
+        "C": "Central Program Utility",
+        "D": "Control Processing User"
+      },
+      "correctAnswer": "A",
+      "explanation": "CPU là viết tắt của Central Processing Unit, tức bộ xử lý trung tâm."
+    },
+    {
+      "id": "q2",
+      "question": "Hệ điều hành nào là mã nguồn mở?",
+      "options": {
+        "A": "Windows",
+        "B": "macOS",
+        "C": "GNU/Linux",
+        "D": "iOS"
+      },
+      "correctAnswer": "C",
+      "explanation": "GNU/Linux là hệ điều hành mã nguồn mở với nhiều bản phân phối khác nhau."
+    },
+    {
+      "id": "q3",
+      "question": "Đơn vị nhỏ nhất để lưu trữ dữ liệu trong máy tính là gì?",
+      "options": {
+        "A": "Byte",
+        "B": "Bit",
+        "C": "Kilobyte",
+        "D": "Megabyte"
+      },
+      "correctAnswer": "B",
+      "explanation": "Bit là đơn vị nhỏ nhất, có thể mang giá trị 0 hoặc 1."
+    },
+    {
+      "id": "q4",
+      "question": "Phím tắt nào thường dùng để sao chép nội dung đã chọn?",
+      "options": {
+        "A": "Ctrl + X",
+        "B": "Ctrl + V",
+        "C": "Ctrl + C",
+        "D": "Ctrl + Z"
+      },
+      "correctAnswer": "C",
+      "explanation": "Ctrl + C dùng để sao chép nội dung đã chọn."
+    }
+  ]
+}
