@@ -1,4 +1,3 @@
-import { Button, Icon } from '@kyralabs/m3exp-web/react';
 import { AnswerKey, Quiz, QuizAnswers } from '../types/quiz';
 
 interface ReviewScreenProps {
@@ -60,9 +59,10 @@ export default function ReviewScreen({ quiz, answers, onBack }: ReviewScreenProp
       </ol>
 
       <div className="actions">
-        <Button variant="filled" size="m" icon={<Icon name="arrow_back" />} onPress={onBack}>
+        <button type="button" className="button button-filled" onClick={onBack}>
+          <span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>
           Quay lại kết quả
-        </Button>
+        </button>
       </div>
     </section>
   );
