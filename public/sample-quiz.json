@@ -36,19 +36,7 @@
         "D": "Megabyte"
       },
       "correctAnswer": "B",
-      "explanation": "Bit là đơn vị nhỏ nhất, có thể mang giá trị 0 hoặc 1."
-    },
-    {
-      "id": "q4",
-      "question": "Phím tắt nào thường dùng để sao chép nội dung đã chọn?",
-      "options": {
-        "A": "Ctrl + X",
-        "B": "Ctrl + V",
-        "C": "Ctrl + C",
-        "D": "Ctrl + Z"
-      },
-      "correctAnswer": "C",
-      "explanation": "Ctrl + C dùng để sao chép nội dung đã chọn."
+      "explanation": "Bit là đơn vị nhỏ nhất, mang giá trị 0 hoặc 1."
     }
   ]
 }

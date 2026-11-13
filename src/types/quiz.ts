@@ -1,4 +1,4 @@
-export type AnswerKey = "A" | "B" | "C" | "D";
+export type AnswerKey = 'A' | 'B' | 'C' | 'D';
 
 export interface QuizQuestion {
   id: string;
@@ -14,7 +14,7 @@ export interface Quiz {
   questions: QuizQuestion[];
 }
 
-export type ThemePreference = "system" | "light" | "dark";
+export type QuizAnswers = Record<string, AnswerKey | undefined>;
 
 export interface QuizScore {
   total: number;
@@ -23,3 +23,5 @@ export interface QuizScore {
   unanswered: number;
   percentage: number;
 }
+
+export type QuizLoadResult = { quiz: Quiz };

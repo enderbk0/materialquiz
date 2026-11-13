@@ -1,9 +1,16 @@
-MaterialQuiz third-party notices
+MaterialQuiz
 
-- Material Symbols: Copyright Google LLC, Apache License 2.0.
-- Material Components for Android: Copyright Google LLC, Apache License 2.0.
-- Aler1x/m3-loading-indicator: Apache License 2.0.
-- Material 3 Expressive component libraries: use and redistribute under their respective open-source licenses.
+This project is not affiliated with, endorsed by, or sponsored by Google.
+Material Design and Material 3 are trademarks of Google LLC.
 
-MaterialQuiz is not affiliated with, endorsed by, or sponsored by Google.
-Material Design, Material 3, Material Symbols, and related names are trademarks of Google LLC.
+Loading indicator shapes and animation model:
+Material Components for Android (Apache-2.0), ported by Aler1x/m3-loading-indicator.
+https://github.com/Aler1x/m3-loading-indicator
+
+Icons:
+Material Symbols (Apache-2.0), loaded from Google Fonts.
+https://fonts.google.com/icons
+
+Material 3 Expressive web components:
+matraic/m3e (MIT).
+https://github.com/matraic/m3e

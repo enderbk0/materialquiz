@@ -1,65 +1,45 @@
-import type { Quiz, QuizScore } from "../types/quiz";
+import { Quiz, QuizScore } from '../types/quiz';
 
 interface ResultsScreenProps {
   quiz: Quiz;
   score: QuizScore;
   onReview: () => void;
   onRestart: () => void;
-  onChooseAnother: () => void;
+  onNewQuiz: () => void;
 }
 
-export function ResultsScreen({
-  quiz,
-  score,
-  onReview,
-  onRestart,
-  onChooseAnother
-}: ResultsScreenProps) {
+export default function ResultsScreen({ quiz, score, onReview, onRestart, onNewQuiz }: ResultsScreenProps) {
   return (
-    <main className="page">
-      <section className="surface results" aria-live="polite">
-        <span className="material-symbols-rounded hero-icon" aria-hidden="true">
-          emoji_events
+    <section className="surface" aria-labelledby="results-title">
+      <h1 id="results-title" className="title">Kết quả</h1>
+      <p className="subtitle">{quiz.title}</p>
+
+      <div className="score-card" aria-live="polite">
+        <span className="score-value">{score.percentage}%</span>
+        <span className="score-detail">
+          {score.correct}/{score.total} câu đúng
         </span>
-        <h1>Kết quả</h1>
-        <p className="description">{quiz.title}</p>
+      </div>
 
-        <div className="score-circle" role="status">
-          <strong>{score.percentage}%</strong>
-          <span>{score.correct}/{score.total} câu đúng</span>
-        </div>
+      <ul className="result-list">
+        <li><span className="material-symbols-rounded" aria-hidden="true">check_circle</span> Đúng: {score.correct}</li>
+        <li><span className="material-symbols-rounded" aria-hidden="true">cancel</span> Sai: {score.incorrect}</li>
+        <li><span className="material-symbols-rounded" aria-hidden="true">help</span> Chưa trả lời: {score.unanswered}</li>
+      </ul>
 
-        <dl className="result-grid">
-          <div>
-            <dt>Tổng câu hỏi</dt>
-            <dd>{score.total}</dd>
-          </div>
-          <div>
-            <dt>Trả lời đúng</dt>
-            <dd>{score.correct}</dd>
-          </div>
-          <div>
-            <dt>Trả lời sai</dt>
-            <dd>{score.incorrect}</dd>
-          </div>
-          <div>
-            <dt>Chưa trả lời</dt>
-            <dd>{score.unanswered}</dd>
-          </div>
-        </dl>
-
-        <div className="actions">
-          <button type="button" className="filled-button" onClick={onReview}>
-            Xem lại bài làm
-          </button>
-          <button type="button" className="outlined-button" onClick={onRestart}>
-            Làm lại
-          </button>
-          <button type="button" className="text-button" onClick={onChooseAnother}>
-            Chọn tệp khác
-          </button>
-        </div>
-      </section>
-    </main>
+      <div className="actions">
+        <button type="button" className="button button-tonal" onClick={onReview}>
+          <span className="material-symbols-rounded" aria-hidden="true">visibility</span>
+          Xem lại bài làm
+        </button>
+        <button type="button" className="button button-filled" onClick={onRestart}>
+          <span className="material-symbols-rounded" aria-hidden="true">refresh</span>
+          Làm lại
+        </button>
+        <button type="button" className="button button-text" onClick={onNewQuiz}>
+          Chọn tệp khác
+        </button>
+      </div>
+    </section>
   );
 }

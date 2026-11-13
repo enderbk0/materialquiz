@@ -1,38 +1,46 @@
-import { useCallback, useEffect, useState } from "react";
-import type { ThemePreference } from "../types/quiz";
+import { useCallback, useEffect, useState } from 'react';
 
-const STORAGE_KEY = "materialquiz.theme";
+export type ThemePreference = 'system' | 'light' | 'dark';
 
-function getSystemTheme(): "light" | "dark" {
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+const STORAGE_KEY = 'materialquiz-theme';
+
+function getInitialTheme(): ThemePreference {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  return saved === 'light' || saved === 'dark' || saved === 'system' ? saved : 'system';
 }
 
-function readSavedTheme(): ThemePreference {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  return saved === "light" || saved === "dark" || saved === "system" ? saved : "system";
+function applyTheme(preference: ThemePreference) {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDark = preference === 'dark' || (preference === 'system' && prefersDark);
+
+  document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+  document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
 }
 
 export function useTheme() {
-  const [preference, setPreference] = useState<ThemePreference>(readSavedTheme);
-  const [systemTheme, setSystemTheme] = useState<"light" | "dark">(getSystemTheme);
+  const [theme, setThemeState] = useState<ThemePreference>(getInitialTheme);
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const update = () => setSystemTheme(getSystemTheme());
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
+    applyTheme(theme);
+
+    if (theme === 'system') {
+      localStorage.removeItem(STORAGE_KEY);
+    } else {
+      localStorage.setItem(STORAGE_KEY, theme);
+    }
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const listener = () => {
+      if (theme === 'system') applyTheme('system');
+    };
+
+    media.addEventListener('change', listener);
+    return () => media.removeEventListener('change', listener);
+  }, [theme]);
+
+  const setTheme = useCallback((next: ThemePreference) => {
+    setThemeState(next);
   }, []);
 
-  useEffect(() => {
-    const resolved = preference === "system" ? systemTheme : preference;
-    document.documentElement.dataset.theme = resolved;
-    document.documentElement.style.colorScheme = resolved;
-  }, [preference, systemTheme]);
-
-  const changeTheme = useCallback((next: ThemePreference) => {
-    setPreference(next);
-    localStorage.setItem(STORAGE_KEY, next);
-  }, []);
-
-  return { preference, changeTheme };
+  return { theme, setTheme };
 }

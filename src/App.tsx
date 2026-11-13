@@ -1,113 +1,117 @@
-import { useEffect, useState } from "react";
-import { FileLoader } from "./components/FileLoader";
-import { QuizOverview } from "./components/QuizOverview";
-import { QuizRunner } from "./components/QuizRunner";
-import { SubmitDialog } from "./components/SubmitDialog";
-import { ResultsScreen } from "./components/ResultsScreen";
-import { ReviewScreen } from "./components/ReviewScreen";
-import { ThemeControl } from "./components/ThemeControl";
-import { useQuizSession } from "./hooks/useQuizSession";
-import { useTheme } from "./hooks/useTheme";
-import type { Quiz } from "./types/quiz";
+import { useCallback, useMemo, useState } from 'react';
+import { Quiz, QuizLoadResult } from './types/quiz';
+import { parseQuizFile } from './lib/validateQuiz';
+import { useTheme } from './hooks/useTheme';
+import { useQuizSession } from './hooks/useQuizSession';
+import FileLoader from './components/FileLoader';
+import QuizOverview from './components/QuizOverview';
+import QuizRunner from './components/QuizRunner';
+import ResultsScreen from './components/ResultsScreen';
+import ReviewScreen from './components/ReviewScreen';
+import ThemeControl from './components/ThemeControl';
+
+type Screen = 'load' | 'overview' | 'running' | 'results' | 'review';
 
 export default function App() {
+  const { theme, setTheme } = useTheme();
+  const [screen, setScreen] = useState<Screen>('load');
   const [quiz, setQuiz] = useState<Quiz | null>(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const { preference, changeTheme } = useTheme();
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const session = useQuizSession();
 
-  const session = quiz ? useQuizSession(quiz) : null;
+  const handleFile = useCallback(async (file: File) => {
+    setIsLoading(true);
+    setLoadError(null);
 
-  useEffect(() => {
-    if (!session) return;
-    const handler = (event: Event) => {
-      const index = (event as CustomEvent<number>).detail;
-      session.goToQuestion(index);
-    };
-    window.addEventListener("goto-question", handler);
-    return () => window.removeEventListener("goto-question", handler);
+    try {
+      const result: QuizLoadResult = await parseQuizFile(file);
+      setQuiz(result.quiz);
+      session.reset(result.quiz.questions.length);
+      setScreen('overview');
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Không thể đọc tệp bài kiểm tra.');
+      setQuiz(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, [session]);
 
-  if (!quiz || !session) {
-    return (
-      <div className="app">
-        <header className="top-bar">
-          <span className="brand">MaterialQuiz</span>
-          <ThemeControl preference={preference} onChange={changeTheme} />
-        </header>
-        <FileLoader onQuizLoaded={setQuiz} />
-      </div>
-    );
-  }
+  const score = useMemo(() => {
+    if (!quiz) return null;
+    return session.getScore(quiz.questions);
+  }, [quiz, session]);
 
-  const chooseAnother = () => {
+  const restart = useCallback(() => {
+    if (!quiz) return;
+    session.reset(quiz.questions.length);
+    setScreen('running');
+  }, [quiz, session]);
+
+  const backToFiles = useCallback(() => {
     setQuiz(null);
-    setConfirmOpen(false);
-  };
-
-  const requestSubmit = () => {
-    if (session.unansweredCount > 0) {
-      setConfirmOpen(true);
-      return;
-    }
-    session.submitQuiz();
-  };
+    setLoadError(null);
+    session.reset(0);
+    setScreen('load');
+  }, [session]);
 
   return (
-    <div className="app">
-      <header className="top-bar">
-        <span className="brand">MaterialQuiz</span>
-        <ThemeControl preference={preference} onChange={changeTheme} />
+    <div className="app-shell">
+      <header className="app-header">
+        <div className="brand">
+          <span className="material-symbols-rounded brand-icon" aria-hidden="true">quiz</span>
+          <span>MaterialQuiz</span>
+        </div>
+        <ThemeControl theme={theme} onChange={setTheme} />
       </header>
 
-      {session.screen === "overview" && (
-        <QuizOverview
-          quiz={quiz}
-          onStart={session.startQuiz}
-          onChooseAnother={chooseAnother}
-        />
-      )}
+      <main className="app-main">
+        {screen === 'load' && (
+          <FileLoader
+            isLoading={isLoading}
+            error={loadError}
+            onFile={handleFile}
+          />
+        )}
 
-      {session.screen === "running" && (
-        <QuizRunner
-          quiz={quiz}
-          currentIndex={session.currentIndex}
-          answers={session.answers}
-          onSelect={session.selectAnswer}
-          onPrevious={session.goToPrevious}
-          onNext={session.goToNext}
-          onSubmit={requestSubmit}
-          onChooseAnother={chooseAnother}
-        />
-      )}
+        {screen === 'overview' && quiz && (
+          <QuizOverview
+            quiz={quiz}
+            onStart={() => {
+              session.reset(quiz.questions.length);
+              setScreen('running');
+            }}
+            onBack={backToFiles}
+          />
+        )}
 
-      {session.screen === "results" && (
-        <ResultsScreen
-          quiz={quiz}
-          score={session.score}
-          onReview={() => session.setScreen("review")}
-          onRestart={session.restartQuiz}
-          onChooseAnother={chooseAnother}
-        />
-      )}
+        {screen === 'running' && quiz && (
+          <QuizRunner
+            quiz={quiz}
+            session={session}
+            onSubmit={() => setScreen('results')}
+            onExit={backToFiles}
+          />
+        )}
 
-      {session.screen === "review" && (
-        <ReviewScreen
-          quiz={quiz}
-          answers={session.answers}
-          onBack={() => session.setScreen("results")}
-          onRestart={session.restartQuiz}
-        />
-      )}
+        {screen === 'results' && quiz && score && (
+          <ResultsScreen
+            quiz={quiz}
+            score={score}
+            onReview={() => setScreen('review')}
+            onRestart={restart}
+            onNewQuiz={backToFiles}
+          />
+        )}
 
-      <SubmitDialog
-        open={confirmOpen}
-        unansweredCount={session.unansweredCount}
-        onCancel={() => setConfirmOpen(false)}
-        onConfirm={() => {
-          setConfirmOpen(false);
-          session.submitQuiz();
-        }}
-      />
+        {screen === 'review' && quiz && score && (
+          <ReviewScreen
+            quiz={quiz}
+            answers={session.answers}
+            onBack={() => setScreen('results')}
+          />
+        )}
+      </main>
     </div>
   );
 }

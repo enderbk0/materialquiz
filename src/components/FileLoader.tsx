@@ -1,100 +1,73 @@
-import { useRef, useState } from "react";
-import { validateQuiz } from "../lib/validateQuiz";
-import type { Quiz } from "../types/quiz";
+import { useRef, useState } from 'react';
 
 interface FileLoaderProps {
-  onQuizLoaded: (quiz: Quiz) => void;
+  isLoading: boolean;
+  error: string | null;
+  onFile: (file: File) => void;
 }
 
-export function FileLoader({ onQuizLoaded }: FileLoaderProps) {
+export default function FileLoader({ isLoading, error, onFile }: FileLoaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const readFile = async (file: File) => {
-    setError(null);
-
-    if (!file.name.toLowerCase().endsWith(".json")) {
-      setError("Vui lòng chọn một tệp có đuôi .json.");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const text = await file.text();
-      const quiz = validateQuiz(text);
-      onQuizLoaded(quiz);
-    } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Không thể đọc tệp bài kiểm tra.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleFiles = (files: FileList | null) => {
+    const file = files?.[0];
+    if (file) onFile(file);
   };
 
   return (
-    <main className="page">
-      <section className="hero surface">
-        <span className="material-symbols-rounded hero-icon" aria-hidden="true">
-          quiz
-        </span>
-        <h1>MaterialQuiz</h1>
-        <p>
-          Tải tệp bài kiểm tra JSON từ thiết bị của bạn và làm trắc nghiệm A, B, C, D ngay trong trình duyệt.
-          Tệp của bạn không được tải lên bất kỳ máy chủ nào.
-        </p>
+    <section className="surface" aria-labelledby="loader-title">
+      <h1 id="loader-title" className="title">Chào mừng đến MaterialQuiz</h1>
+      <p className="subtitle">
+        Chọn hoặc kéo-thả một tệp JSON chứa câu hỏi trắc nghiệm A, B, C, D. Tệp chỉ được xử lý ngay trên thiết bị của bạn.
+      </p>
 
-        <div
-          className={`dropzone${isDragging ? " is-dragging" : ""}`}
-          onDragOver={(event) => {
-            event.preventDefault();
-            setIsDragging(true);
-          }}
-          onDragLeave={() => setIsDragging(false)}
-          onDrop={(event) => {
-            event.preventDefault();
-            setIsDragging(false);
-            const file = event.dataTransfer.files[0];
-            if (file) void readFile(file);
-          }}
+      <div
+        className={`dropzone ${isDragging ? 'is-dragging' : ''}`}
+        onDragOver={(event) => {
+          event.preventDefault();
+          setIsDragging(true);
+        }}
+        onDragLeave={() => setIsDragging(false)}
+        onDrop={(event) => {
+          event.preventDefault();
+          setIsDragging(false);
+          handleFiles(event.dataTransfer.files);
+        }}
+      >
+        <span className="material-symbols-rounded" aria-hidden="true">upload_file</span>
+        <p>Kéo và thả tệp <strong>.json</strong> vào đây</p>
+
+        <input
+          ref={inputRef}
+          className="file-input"
+          type="file"
+          accept=".json,application/json"
+          onChange={(event) => handleFiles(event.target.files)}
+          aria-label="Chọn tệp bài kiểm tra JSON"
+        />
+
+        <button
+          type="button"
+          className="button button-filled"
+          onClick={() => inputRef.current?.click()}
+          disabled={isLoading}
         >
-          <span className="material-symbols-rounded" aria-hidden="true">
-            upload_file
-          </span>
-          <p>Kéo và thả tệp `.json` vào đây</p>
-          <button type="button" className="filled-button" onClick={() => inputRef.current?.click()}>
-            Chọn tệp bài kiểm tra
-          </button>
-          <input
-            ref={inputRef}
-            type="file"
-            accept=".json,application/json"
-            className="visually-hidden"
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              if (file) void readFile(file);
-              event.target.value = "";
-            }}
-          />
+          <span className="material-symbols-rounded" aria-hidden="true">folder_open</span>
+          Chọn tệp bài kiểm tra
+        </button>
+      </div>
+
+      {isLoading && (
+        <div role="status">
+          <div className="loading-ring" aria-hidden="true" />
+          <p className="subtitle">Đang đọc và kiểm tra tệp…</p>
         </div>
+      )}
 
-        {isLoading && (
-          <div className="loading" role="status">
-            <span className="spinner" aria-hidden="true" />
-            Đang đọc và kiểm tra tệp...
-          </div>
-        )}
-
-        {error && (
-          <p className="error" role="alert">
-            <span className="material-symbols-rounded" aria-hidden="true">
-              error
-            </span>
-            {error}
-          </p>
-        )}
-      </section>
-    </main>
+      {error && (
+        <p className="error-text" role="alert">{error}</p>
+      )}
+    </section>
   );
 }

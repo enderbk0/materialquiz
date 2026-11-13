@@ -1,28 +1,31 @@
-import type { AnswerKey, Quiz, QuizScore } from "../types/quiz";
+import { AnswerKey, Quiz, QuizAnswers, QuizScore } from '../types/quiz';
 
-export function scoreQuiz(quiz: Quiz, answers: Record<string, AnswerKey | undefined>): QuizScore {
-  const total = quiz.questions.length;
+export function scoreQuiz(questions: Quiz['questions'], answers: QuizAnswers): QuizScore {
   let correct = 0;
   let incorrect = 0;
   let unanswered = 0;
 
-  for (const question of quiz.questions) {
+  for (const question of questions) {
     const answer = answers[question.id];
 
     if (!answer) {
       unanswered += 1;
-    } else if (answer === question.correctAnswer) {
+      continue;
+    }
+
+    if (answer === question.correctAnswer) {
       correct += 1;
     } else {
       incorrect += 1;
     }
   }
 
-  return {
-    total,
-    correct,
-    incorrect,
-    unanswered,
-    percentage: total === 0 ? 0 : Math.round((correct / total) * 100)
-  };
+  const total = questions.length;
+  const percentage = total === 0 ? 0 : Math.round((correct / total) * 100);
+
+  return { total, correct, incorrect, unanswered, percentage };
+}
+
+export function isAnswerKey(value: unknown): value is AnswerKey {
+  return value === 'A' || value === 'B' || value === 'C' || value === 'D';
 }

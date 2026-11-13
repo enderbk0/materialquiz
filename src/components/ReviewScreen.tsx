@@ -1,76 +1,69 @@
-import type { AnswerKey, Quiz } from "../types/quiz";
+import { AnswerKey, Quiz, QuizAnswers } from '../types/quiz';
 
 interface ReviewScreenProps {
   quiz: Quiz;
-  answers: Record<string, AnswerKey | undefined>;
+  answers: QuizAnswers;
   onBack: () => void;
-  onRestart: () => void;
 }
 
-export function ReviewScreen({ quiz, answers, onBack, onRestart }: ReviewScreenProps) {
+const ANSWER_KEYS: AnswerKey[] = ['A', 'B', 'C', 'D'];
+
+export default function ReviewScreen({ quiz, answers, onBack }: ReviewScreenProps) {
   return (
-    <main className="page">
-      <section className="surface review">
-        <h1>Xem lại bài làm</h1>
+    <section className="surface" aria-labelledby="review-title">
+      <h1 id="review-title" className="title">Xem lại bài làm</h1>
+      <p className="subtitle">Kiểm tra đáp án đã chọn, đáp án đúng và giải thích của từng câu hỏi.</p>
 
-        <div className="review-list">
-          {quiz.questions.map((question, index) => {
-            const selected = answers[question.id];
-            const isCorrect = selected === question.correctAnswer;
-            const state = !selected ? "unanswered" : isCorrect ? "correct" : "incorrect";
-            const stateLabel =
-              state === "unanswered" ? "Chưa trả lời" : state === "correct" ? "Đúng" : "Sai";
+      <ol className="review-list">
+        {quiz.questions.map((question, index) => {
+          const selected = answers[question.id];
+          const isCorrect = selected === question.correctAnswer;
+          const state = !selected ? 'unanswered' : isCorrect ? 'correct' : 'incorrect';
 
-            return (
-              <article key={question.id} className={`review-item ${state}`}>
-                <header>
-                  <span className="review-number">{index + 1}</span>
-                  <h2>{question.question}</h2>
-                  <span className={`state-chip ${state}`}>
-                    <span className="material-symbols-rounded" aria-hidden="true">
-                      {state === "correct" ? "check_circle" : state === "incorrect" ? "cancel" : "help"}
-                    </span>
-                    {stateLabel}
-                  </span>
-                </header>
+          return (
+            <li key={question.id} className={`review-item ${state}`}>
+              <h2>
+                Câu {index + 1}: {question.question}
+              </h2>
 
-                <ul>
-                  {(Object.keys(question.options) as AnswerKey[]).map((key) => {
-                    const isUserAnswer = selected === key;
-                    const isCorrectAnswer = question.correctAnswer === key;
-                    const className = [
-                      "review-option",
-                      isCorrectAnswer ? "correct-answer" : "",
-                      isUserAnswer && !isCorrectAnswer ? "incorrect-answer" : ""
-                    ]
-                      .filter(Boolean)
-                      .join(" ");
+              <p className="review-status">
+                {!selected && 'Chưa trả lời'}
+                {selected && isCorrect && 'Chính xác'}
+                {selected && !isCorrect && 'Chưa chính xác'}
+              </p>
 
-                    return (
-                      <li key={key} className={className}>
-                        <strong>{key}.</strong> {question.options[key]}
-                        {isUserAnswer && <span className="tag">Bạn chọn</span>}
-                        {isCorrectAnswer && <span className="tag">Đáp án đúng</span>}
-                      </li>
-                    );
-                  })}
-                </ul>
+              <ul>
+                {ANSWER_KEYS.map((key) => {
+                  const isCorrectAnswer = key === question.correctAnswer;
+                  const isSelected = selected === key;
 
-                {question.explanation && <p className="explanation">{question.explanation}</p>}
-              </article>
-            );
-          })}
-        </div>
+                  return (
+                    <li
+                      key={key}
+                      className={
+                        isCorrectAnswer ? 'correct-answer' : isSelected ? 'selected-answer' : ''
+                      }
+                    >
+                      <strong>{key}.</strong> {question.options[key]}
+                      {isCorrectAnswer && ' — Đáp án đúng'}
+                      {isSelected && !isCorrectAnswer && ' — Bạn đã chọn'}
+                    </li>
+                  );
+                })}
+              </ul>
 
-        <div className="actions">
-          <button type="button" className="outlined-button" onClick={onBack}>
-            Quay lại kết quả
-          </button>
-          <button type="button" className="filled-button" onClick={onRestart}>
-            Làm lại
-          </button>
-        </div>
-      </section>
-    </main>
+              {question.explanation && <p className="explanation">Giải thích: {question.explanation}</p>}
+            </li>
+          );
+        })}
+      </ol>
+
+      <div className="actions">
+        <button type="button" className="button button-filled" onClick={onBack}>
+          <span className="material-symbols-rounded" aria-hidden="true">arrow_back</span>
+          Quay lại kết quả
+        </button>
+      </div>
+    </section>
   );
 }

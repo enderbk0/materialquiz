@@ -1,67 +1,53 @@
-import { useCallback, useMemo, useState } from "react";
-import type { AnswerKey, Quiz } from "../types/quiz";
-import { scoreQuiz } from "../lib/scoreQuiz";
+import { useCallback, useState } from 'react';
+import { AnswerKey, Quiz, QuizAnswers, QuizScore } from '../types/quiz';
+import { scoreQuiz } from '../lib/scoreQuiz';
 
-export type QuizScreen = "overview" | "running" | "results" | "review";
-
-export function useQuizSession(quiz: Quiz) {
-  const [screen, setScreen] = useState<QuizScreen>("overview");
+export function useQuizSession() {
+  const [answers, setAnswers] = useState<QuizAnswers>({});
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, AnswerKey | undefined>>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const currentQuestion = quiz.questions[currentIndex];
-  const score = useMemo(() => scoreQuiz(quiz, answers), [quiz, answers]);
-  const unansweredCount = score.unanswered;
+  const reset = useCallback((questionCount: number) => {
+    setAnswers(Object.fromEntries(Array.from({ length: questionCount }, (_, index) => [`q${index + 1}`, undefined])));
+    setCurrentIndex(0);
+    setIsSubmitted(false);
+  }, []);
 
   const selectAnswer = useCallback((questionId: string, answer: AnswerKey) => {
     setAnswers((previous) => ({ ...previous, [questionId]: answer }));
   }, []);
 
-  const goToQuestion = useCallback((index: number) => {
-    setCurrentIndex(Math.max(0, Math.min(index, quiz.questions.length - 1)));
-  }, [quiz.questions.length]);
-
-  const goToNext = useCallback(() => {
-    setCurrentIndex((index) => Math.min(index + 1, quiz.questions.length - 1));
+  const goTo = useCallback((index: number, total: number) => {
+    setCurrentIndex(Math.min(Math.max(index, 0), Math.max(total - 1, 0)));
   }, []);
 
-  const goToPrevious = useCallback(() => {
-    setCurrentIndex((index) => Math.max(index - 1, 0));
+  const next = useCallback((total: number) => {
+    setCurrentIndex((current) => Math.min(current + 1, Math.max(total - 1, 0)));
   }, []);
 
-  const startQuiz = useCallback(() => {
-    setCurrentIndex(0);
-    setScreen("running");
+  const previous = useCallback(() => {
+    setCurrentIndex((current) => Math.max(current - 1, 0));
   }, []);
 
-  const submitQuiz = useCallback(() => {
-    setSubmitted(true);
-    setScreen("results");
+  const submit = useCallback(() => {
+    setIsSubmitted(true);
   }, []);
 
-  const restartQuiz = useCallback(() => {
-    setAnswers({});
-    setCurrentIndex(0);
-    setSubmitted(false);
-    setScreen("overview");
-  }, []);
+  const getScore = useCallback(
+    (questions: Quiz['questions']): QuizScore => scoreQuiz(questions, answers),
+    [answers],
+  );
 
   return {
-    screen,
-    setScreen,
-    currentIndex,
-    currentQuestion,
     answers,
-    score,
-    submitted,
-    unansweredCount,
+    currentIndex,
+    isSubmitted,
+    reset,
     selectAnswer,
-    goToQuestion,
-    goToNext,
-    goToPrevious,
-    startQuiz,
-    submitQuiz,
-    restartQuiz
+    goTo,
+    next,
+    previous,
+    submit,
+    getScore,
   };
 }

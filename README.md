@@ -1,31 +1,29 @@
 # MaterialQuiz
 
-MaterialQuiz is a free, open-source, browser-only ABCD quiz app. Load a local JSON quiz file, answer multiple-choice questions, submit the quiz, and review correct answers and explanations.
+MaterialQuiz là ứng dụng web làm bài trắc nghiệm A/B/C/D mã nguồn mở, chạy hoàn toàn trong trình duyệt. Người dùng chọn hoặc kéo-thả một tệp JSON, làm bài, xem kết quả và xem lại đáp án.
 
-No account, backend, database, quiz editor, or file upload is required. Quiz files are read and processed entirely in your browser.
+Ứng dụng không có tài khoản, backend, cơ sở dữ liệu hay trình soạn thảo câu hỏi. Tệp bài kiểm tra chỉ được đọc cục bộ bằng File API và không được tải lên máy chủ.
 
-## Features
+## Tính năng
 
-- Load a quiz from a local `.json` file using a file picker or drag-and-drop
-- Answer questions with options A, B, C, and D
-- Navigate between questions and change answers before submitting
-- Skip questions; skipped questions are counted as unanswered
-- Confirm before submitting when questions remain unanswered
-- View score, percentage, correct/incorrect/unanswered counts, and review explanations
-- Restart the same quiz or load another JSON file
-- Light, dark, and system themes with saved preference
-- Vietnamese interface
-- Responsive layout for desktop, tablet, and mobile
-- GitHub Pages deployment workflow
+- Tải tệp `.json` bằng bộ chọn tệp hoặc kéo-thả.
+- Kiểm tra tính hợp lệ của tệp trước khi bắt đầu.
+- Làm bài trắc nghiệm với bốn lựa chọn A, B, C, D.
+- Di chuyển giữa các câu, bỏ qua câu và thay đổi đáp án trước khi nộp bài.
+- Xác nhận trước khi nộp bài khi còn câu chưa trả lời.
+- Xem điểm, số câu đúng, sai, chưa trả lời và phần trăm.
+- Xem lại đáp án đúng, đáp án đã chọn và giải thích nếu có.
+- Chế độ sáng, tối và theo hệ điều hành; lưu lựa chọn giao diện trong `localStorage`.
+- Giao diện tiếng Việt, responsive và hỗ trợ điều hướng bằng bàn phím.
 
-## Run locally
+## Chạy dự án
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Build
+Build production:
 
 ```bash
 npm run build
@@ -34,15 +32,15 @@ npm run preview
 
 ## GitHub Pages
 
-The repository includes `.github/workflows/deploy-pages.yml`. Enable GitHub Pages with **GitHub Actions** as the source; pushes to `main` will build and deploy the site.
-
-The app uses `base: "/materialquiz/"`, so its GitHub Pages URL is:
+Dự án được cấu hình để triển khai lên GitHub Pages tại:
 
 ```text
 https://enderbk0.github.io/materialquiz/
 ```
 
-## Quiz JSON schema
+Workflow `.github/workflows/deploy-pages.yml` sẽ build và triển khai mỗi khi có commit mới trên nhánh `main`. Trong Settings → Pages, chọn **GitHub Actions** làm source.
+
+## Định dạng JSON
 
 ```json
 {
@@ -65,25 +63,19 @@ https://enderbk0.github.io/materialquiz/
 }
 ```
 
-### Rules
+### Quy tắc
 
-- `title`: required, non-empty string.
-- `description`: optional string.
-- `questions`: required, non-empty array.
-- `id`: required, unique string.
-- `question`: required, non-empty string.
-- `options`: exactly `A`, `B`, `C`, and `D`; every value must be a non-empty string.
-- `correctAnswer`: required and must be `A`, `B`, `C`, or `D`.
-- `explanation`: optional string.
+- `title`: bắt buộc, chuỗi không rỗng.
+- `description`: không bắt buộc.
+- `questions`: bắt buộc, mảng không rỗng.
+- `id`: bắt buộc, duy nhất trong bài kiểm tra.
+- `question`: bắt buộc, chuỗi không rỗng.
+- `options`: phải có đúng bốn khóa `A`, `B`, `C`, `D`, mỗi giá trị là chuỗi không rỗng.
+- `correctAnswer`: bắt buộc và phải là `A`, `B`, `C`, hoặc `D`.
+- `explanation`: không bắt buộc.
 
-A sample quiz is available at `public/sample-quiz.json`.
+Tệp mẫu để thử nghiệm nằm tại `public/sample-quiz.json`.
 
-## Privacy
+## Giấy phép và ghi nhận
 
-MaterialQuiz does not upload quiz files, answers, scores, or personal information to a server. All processing happens locally in the browser.
-
-## License and notices
-
-This project is licensed under the MIT License. See `LICENSE` and `NOTICE` for third-party attribution.
-
-MaterialQuiz is not affiliated with, endorsed by, or sponsored by Google. Material Design and Material Symbols are trademarks of Google LLC.
+Xem `LICENSE` và `NOTICE`. MaterialQuiz được phát hành theo MIT License. Dự án không liên kết với hay được chứng thực bởi Google; Material Design và Material 3 là thương hiệu của Google.
